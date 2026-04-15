@@ -1,1 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Admin — Assistant Commercial IA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#6366f1;--dark:#0f0f0f;--bg:#f5f5f5;--white:#fff;--border:#e5e5e5;--muted:#888;--success:#22c55e;--danger:#ef4444}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--dark);font-size:14px}
+.hidden{display:none!important}
+/* Login */
+.login-wrap{height:100vh;display:flex;align-items:center;justify-content:center;background:var(--dark)}
+.login-box{background:var(--white);border-radius:14px;padding:36px 32px;width:360px;max-width:calc(100vw - 32px)}
+.login-title{font-size:20px;font-weight:800;color:var(--dark);margin-bottom:4px}
+.login-title span{color:var(--p)}
+.login-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.form-row{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+input{padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;background:#fafafa}
+input:focus{border-color:var(--p);background:var(--white)}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
+.btn:hover{opacity:.85} .btn:disabled{opacity:.45;cursor:default}
+.btn-p{background:var(--p);color:#fff}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-ol{background:transparent;border:1.5px solid var(--border);color:var(--dark)}
+.btn-dn{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 12px;font-size:12px}
+.err{background:#fef2f2;color:var(--danger);border-radius:7px;padding:8px 12px;font-size:12px;font-weight:600;margin-bottom:10px}
+/* App */
+.app{display:none;flex-direction:column;min-height:100vh}
+.app.active{display:flex}
+.appbar{background:var(--dark);padding:0 24px;display:flex;align-items:center;height:56px;gap:12px;flex-shrink:0}
+.appbar-logo{font-size:16px;font-weight:800;color:#fff}
+.appbar-logo span{color:var(--p)}
+.appbar-badge{background:rgba(99,102,241,.25);border:1px solid rgba(99,102,241,.4);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)}
+.appbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600}
+.main{flex:1;padding:24px;max-width:1100px;width:100%;margin:0 auto}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.stat{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px}
+.stat-lbl{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.stat-val{font-size:28px;font-weight:800;color:var(--dark)}
+/* Toolbar */
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.toolbar-title{font-size:16px;font-weight:700}
+/* Cards clients */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.client-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:10px}
+.cc-head{display:flex;align-items:center;gap:10px}
+.cc-av{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.cc-nom{font-size:15px;font-weight:700}
+.cc-secteur{font-size:12px;color:var(--muted)}
+.cc-meta{display:flex;gap:8px;flex-wrap:wrap}
+.cc-pill{background:#f5f5f5;border-radius:20px;padding:3px 10px;font-size:11px;color:#555;font-weight:500}
+.cc-url{font-size:12px;color:var(--p);font-weight:600;word-break:break-all}
+.cc-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
+.badge-actif{background:#dcfce7;color:#166534;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+.badge-inactif{background:#fef2f2;color:#991b1b;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:var(--white);border-radius:14px;padding:28px;width:520px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-row-full{grid-column:1/-1}
+.color-row{display:flex;gap:8px;align-items:center}
+.cswatch{width:36px;height:36px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;padding:2px;flex-shrink:0}
+.pw-info{font-size:11px;color:var(--muted);margin-top:3px}
+.save-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.save-toast.show{opacity:1}
+</style>
+</head>
+<body>
 
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-title">Assistant<span>IA</span></div>
+    <div class="login-sub">Super Administration</div>
+    <div class="form-row"><label>Mot de passe super admin</label><input type="password" id="sa-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')saLogin()"></div>
+    <div id="sa-err" class="err hidden">Mot de passe incorrect</div>
+    <button class="btn btn-dark w100" style="width:100%" onclick="saLogin()">Accéder au tableau de bord</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="appbar">
+    <div class="appbar-logo">Assistant<span>IA</span></div>
+    <div class="appbar-badge">Super Admin</div>
+    <div class="appbar-right">
+      <button class="btn-ghost" onclick="saLogout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="stats" id="stats"></div>
+    <div class="toolbar">
+      <div class="toolbar-title">Clients actifs</div>
+      <button class="btn btn-p" onclick="openCreate()">+ Nouveau client</button>
+    </div>
+    <div class="clients-grid" id="clients-grid"></div>
+  </div>
+</div>
+
+<!-- MODAL CRÉATION / ÉDITION -->
+<div class="modal-bg hidden" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Nouveau client</div>
+    <div class="form-grid">
+      <div class="form-row"><label>Slug URL *</label><input id="f-slug" placeholder="bricoexpert" /></div>
+      <div class="form-row"><label>Nom entreprise *</label><input id="f-nom" placeholder="BricoExpert" /></div>
+      <div class="form-row form-row-full"><label>Secteur</label><input id="f-secteur" placeholder="Magasin de bricolage" /></div>
+      <div class="form-row"><label>Nom de l'agent</label><input id="f-agent" placeholder="Rachid" /></div>
+      <div class="form-row"><label>Clé API Anthropic</label><input type="password" id="f-apikey" placeholder="sk-ant-api… (optionnel)" /></div>
+      <div class="form-row">
+        <label>Couleur principale</label>
+        <div class="color-row">
+          <input type="color" id="f-cs1" class="cswatch" value="#E8761A" oninput="document.getElementById('f-ch1').value=this.value">
+          <input id="f-ch1" value="#E8761A" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value))document.getElementById('f-cs1').value=this.value" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Couleur header</label>
+        <div class="color-row">
+          <input type="color" id="f-cs2" class="cswatch" value="#1a1a1a" oninput="document.getElementById('f-ch2').value=this.value">
+          <input id="f-ch2" value="#1a1a1a" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value))document.getElementById('f-cs2').value=this.value" />
+        </div>
+      </div>
+      <div class="form-row"><label>Mot de passe admin</label><input type="password" id="f-pw-a" placeholder="Laisser vide = admin123" /><div class="pw-info">Par défaut : admin123</div></div>
+      <div class="form-row"><label>Mot de passe commerciaux</label><input type="password" id="f-pw-c" placeholder="Laisser vide = vendeur123" /><div class="pw-info">Par défaut : vendeur123</div></div>
+    </div>
+    <div id="modal-err" class="err hidden" style="margin-top:10px"></div>
+    <div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end">
+      <button class="btn btn-ol" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-p" id="modal-save-btn" onclick="saveClient()">Créer le client</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="toast"></div>
+
+<script>
+let clients = [];
+let editId  = null;
+
+async function api(url, method='GET', body=null) {
+  const opts = { method, headers:{'Content-Type':'application/json'}, credentials:'same-origin' };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+window.addEventListener('load', async () => {
+  const me = await api('/api/auth/me');
+  if (me.role === 'superadmin') { showApp(); await loadClients(); }
+  else document.getElementById('login-wrap').style.display = 'flex';
+});
+
+async function saLogin() {
+  const pw  = document.getElementById('sa-pw').value;
+  const err = document.getElementById('sa-err');
+  err.classList.add('hidden');
+  const r = await api('/api/auth/superadmin', 'POST', { password: pw });
+  if (r.ok) { showApp(); await loadClients(); }
+  else err.classList.remove('hidden');
+}
+
+async function saLogout() {
+  await api('/api/auth/logout','POST');
+  location.reload();
+}
+
+function showApp() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+}
+
+async function loadClients() {
+  clients = await api('/api/superadmin/clients');
+  renderStats();
+  renderClients();
+}
+
+function renderStats() {
+  const total   = clients.length;
+  const actifs  = clients.filter(c=>c.actif).length;
+  const produits = clients.reduce((s,c)=>s+c.nb_produits,0);
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-lbl">Total clients</div><div class="stat-val">${total}</div></div>
+    <div class="stat"><div class="stat-lbl">Clients actifs</div><div class="stat-val">${actifs}</div></div>
+    <div class="stat"><div class="stat-lbl">Produits catalogués</div><div class="stat-val">${produits}</div></div>
+    <div class="stat"><div class="stat-lbl">Revenu mensuel estimé</div><div class="stat-val">${actifs*99}€</div></div>`;
+}
+
+function renderClients() {
+  const grid = document.getElementById('clients-grid');
+  if (!clients.length) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:20px">Aucun client encore. Créez votre premier client !</div>';
+    return;
+  }
+  grid.innerHTML = clients.map(c => `
+    <div class="client-card">
+      <div class="cc-head">
+        <div class="cc-av" style="background:${c.color||'#E8761A'}">${(c.agent_nom||'A')[0].toUpperCase()}</div>
+        <div>
+          <div class="cc-nom">${esc(c.nom)} <span class="${c.actif?'badge-actif':'badge-inactif'}">${c.actif?'Actif':'Inactif'}</span></div>
+          <div class="cc-secteur">${esc(c.secteur||'')}</div>
+        </div>
+      </div>
+      <div class="cc-meta">
+        <div class="cc-pill">Agent : ${esc(c.agent_nom||'—')}</div>
+        <div class="cc-pill">${c.nb_produits} produit${c.nb_produits>1?'s':''}</div>
+      </div>
+      <div class="cc-url" onclick="window.open('/${esc(c.slug)}','_blank')" style="cursor:pointer">
+        /${c.slug} ↗
+      </div>
+      <div class="cc-actions">
+        <button class="btn btn-ol btn-sm" onclick="openEdit(${c.id})">Modifier</button>
+        <button class="btn btn-ol btn-sm" onclick="window.open('/${esc(c.slug)}','_blank')">Ouvrir ↗</button>
+        <button class="btn btn-${c.actif?'dn':'p'} btn-sm" onclick="toggleActif(${c.id},${c.actif})">${c.actif?'Désactiver':'Activer'}</button>
+        <button class="btn btn-dn btn-sm" onclick="confirmDelete(${c.id},'${esc(c.nom)}')">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+function openCreate() {
+  editId = null;
+  document.getElementById('modal-title').textContent = 'Nouveau client';
+  document.getElementById('modal-save-btn').textContent = 'Créer le client';
+  ['f-slug','f-nom','f-secteur','f-agent','f-apikey','f-pw-a','f-pw-c'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-ch1').value='#E8761A'; document.getElementById('f-cs1').value='#E8761A';
+  document.getElementById('f-ch2').value='#1a1a1a'; document.getElementById('f-cs2').value='#1a1a1a';
+  document.getElementById('f-slug').disabled = false;
+  document.getElementById('modal-err').classList.add('hidden');
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function openEdit(id) {
+  const c = clients.find(x=>x.id===id);
+  if (!c) return;
+  editId = id;
+  document.getElementById('modal-title').textContent = 'Modifier — ' + c.nom;
+  document.getElementById('modal-save-btn').textContent = 'Enregistrer';
+  document.getElementById('f-slug').value    = c.slug; document.getElementById('f-slug').disabled = true;
+  document.getElementById('f-nom').value     = c.nom;
+  document.getElementById('f-secteur').value = c.secteur||'';
+  document.getElementById('f-agent').value   = c.agent_nom||'';
+  document.getElementById('f-ch1').value     = c.color||'#E8761A'; document.getElementById('f-cs1').value = c.color||'#E8761A';
+  document.getElementById('f-ch2').value     = c.dark_color||'#1a1a1a'; document.getElementById('f-cs2').value = c.dark_color||'#1a1a1a';
+  ['f-apikey','f-pw-a','f-pw-c'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal-err').classList.add('hidden');
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+async function saveClient() {
+  const err = document.getElementById('modal-err');
+  err.classList.add('hidden');
+  const payload = {
+    slug:          document.getElementById('f-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,''),
+    nom:           document.getElementById('f-nom').value.trim(),
+    secteur:       document.getElementById('f-secteur').value.trim(),
+    agent_nom:     document.getElementById('f-agent').value.trim() || 'Agent',
+    color:         document.getElementById('f-ch1').value,
+    dark_color:    document.getElementById('f-ch2').value,
+    api_key:       document.getElementById('f-apikey').value.trim() || undefined,
+    pw_admin:      document.getElementById('f-pw-a').value.trim() || undefined,
+    pw_commercial: document.getElementById('f-pw-c').value.trim() || undefined,
+  };
+  if (!payload.nom) { err.textContent='Le nom est obligatoire.'; err.classList.remove('hidden'); return; }
+  if (!editId && !payload.slug) { err.textContent='Le slug est obligatoire.'; err.classList.remove('hidden'); return; }
+
+  const r = editId
+    ? await api(`/api/superadmin/clients/${editId}`, 'PUT', payload)
+    : await api('/api/superadmin/clients', 'POST', payload);
+
+  if (r.error) { err.textContent=r.error; err.classList.remove('hidden'); return; }
+  closeModal();
+  await loadClients();
+  showToast(editId ? '✓ Client mis à jour' : '✓ Client créé');
+}
+
+async function toggleActif(id, actif) {
+  await api(`/api/superadmin/clients/${id}`, 'PUT', { actif: !actif });
+  await loadClients();
+}
+
+async function confirmDelete(id, nom) {
+  if (!confirm(`Supprimer le client "${nom}" ? Cette action est irréversible.`)) return;
+  await api(`/api/superadmin/clients/${id}`, 'DELETE');
+  await loadClients();
+  showToast('Client supprimé');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
