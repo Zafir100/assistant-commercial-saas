@@ -1,0 +1,18 @@
+{
+  "name": "assistant-commercial-saas",
+  "version": "1.0.0",
+  "description": "SaaS Assistant Commercial IA — Multi-clients",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "setup": "node setup-db.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "pg": "^8.11.3",
+    "node-fetch": "^2.7.0",
+    "connect-pg-simple": "^9.0.1"
+  },
+  "engines": { "node": ">=18.0.0" }
+}
