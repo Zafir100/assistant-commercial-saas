@@ -6,8 +6,7 @@ const fetch       = require('node-fetch');
 const crypto      = require('crypto');
 const fs          = require('fs');
 const path        = require('path');
-const db          = require('./src/db');
-
+const db          = require('./db')
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const SUPER_PW = process.env.SUPER_ADMIN_PASSWORD || 'superadmin123';
